@@ -4,9 +4,9 @@ from fastapi.templating import Jinja2Templates
 
 app = FastAPI()
 
-app.mount("/static", StaticFiles(directory="static"))
-templates = Jinja2Templates(directory="templates")
+app.mount("/static", StaticFiles(directory="server/templates/static"))
+templates = Jinja2Templates(directory="server/templates")
 
 @app.get('/')
 async def index(request: Request):
-    return templates.TemplateResponse("search.html",{'request': request})
+    return templates.TemplateResponse("index.html",{'request': request})
