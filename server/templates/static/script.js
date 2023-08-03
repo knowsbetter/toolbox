@@ -142,8 +142,8 @@ async function extractAndSavePages(pdfUrl) {
         // Получим список закладок для текущей страницы
         const bookmarks = await pdfDocument.getDestination(pageLabel);
 
-        // Проверим, есть ли подзакладки с именами "PAGE 0", "PAGE 0A", "PAGE 0B" и т.д.
-        if (bookmarks.some(bookmark => bookmark === "PAGE 0" || bookmark === "PAGE 0A" || bookmark === "PAGE 0B")) {
+        // Проверим, есть ли подзакладки с именами "PAGE 0"
+        if (bookmarks.some(bookmark => bookmark.startsWith("PAGE 0"))) {
             // Это страница с картинками
             const copiedPage = await imgDocument.copyPages(pdfDocument, [i]);
             imgDocument.addPage(copiedPage[0]);
