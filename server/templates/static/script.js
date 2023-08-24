@@ -1,5 +1,5 @@
-// 10.7.22.93:8000/search.html
-// cd site
+// 10.7.22.66:8000/search.html
+// cd server/templates & python -m http.server -b 0.0.0.0 8000
 // python -m http.server -b 0.0.0.0 8000
 
 function search()

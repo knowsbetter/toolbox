@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta HTTP-EQUIV="Pragma" CONTENT="no-cache">
+    <meta HTTP-EQUIV="Expires" CONTENT="-1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Toolbox на минималках</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='styles.css') }}">
+</head>
+<body>
+    <form id="input-form" action="" method="get">
+        <label for="search_word">Введите PN для поиска по AIPC B738:</label>
+        <input type="text" id="search_word" name="search_word" placeholder="Введите PN...">
+        <button type="submit">Поиск</button>
+    </form>
+
+    <div class="container">
+        <div class="table-container">
+            <div>
+                <h2>Результат поиска:</h2>
+                <table id="results"></table>
+            </div>
+        </div>
+        <div class="pdf-container">
+            <iframe id="pdfFrame"></iframe>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById("input-form").addEventListener("submit", async function(event)
+        {
+            event.preventDefault();
+            const inputField = document.getElementById("search_word");
+            const resultTable = document.getElementById("results");
+
+            const response = await fetch(`/search?search_word=${inputField.value}`);
+            const data = await response.json();
+
+            resultTable.innerHTML = "";
+
+            if (data.words && data.results)
+            {
+                const words = data.words;
+                for (let i = 0; i < words.length; i++)
+                {
+                    const word = words[i];
+                    const row = resultTable.insertRow();
+                    const cell = row.insertCell();
+                    cell.innerHTML = `<b>${word}</b>`;
+
+                    const resultData = data.results[i]
+                    var currentItem = "";
+                    var currentChapter = "";
+                    var anchor;
+                    var linkCell;
+
+                    for (let j = 0; j < resultData.length; j++)
+                    {
+                        const itemInfo = resultData[j][0].split(' ');
+                        if (currentChapter != itemInfo[0])
+                        {
+                            if (currentChapter != "")
+                            {
+                                linkCell.appendChild(anchor);
+                            }
+                            currentChapter = itemInfo[0]
+                            currentItem = itemInfo[1]
+                            const row = resultTable.insertRow();
+                            linkCell = row.insertCell();
+                            anchor = document.createElement("a");
+                            anchor.innerHTML = `${currentChapter}<br>Items: ${currentItem}`;
+                            anchor.href = resultData[j][1];
+                            anchor.addEventListener("click", loadPDF);
+                        }
+                        else
+                        {
+                            if (currentItem != itemInfo[1])
+                            {
+                                currentItem = itemInfo[1];
+                                anchor.innerHTML += `, ${currentItem}`;
+                            }
+                        }
+                    }
+                    linkCell.appendChild(anchor);
+                }
+            }
+            else
+            {
+                const row = resultTable.insertRow();
+                const cell = row.insertCell();
+                cell.textContent = "Не найдено!";
+            }
+        });
+
+        function loadPDF(event)
+        {
+            event.preventDefault();
+            var pdfUrl = event.target.href;
+            var pdfFrame = document.getElementById("pdfFrame");
+            pdfFrame.src = pdfUrl;
+        }
+    </script>
+</body>
+</html>
