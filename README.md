@@ -1,5 +1,5 @@
 # Minimal toolbox for B748.
-This project helps to search part numbers listed in AIPC of B748F aircraft.
+This project helps to search part numbers listed in AIPC of B738F aircraft.
 
 # Instructions
 To start the server:<br>
