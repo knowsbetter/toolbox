@@ -17,10 +17,8 @@
 
     <div class="container">
         <div class="table-container">
-            <div>
-                <h2>Результат поиска:</h2>
-                <table id="results"></table>
-            </div>
+            <h2>Результат поиска:</h2>
+            <table id="results"></table>
         </div>
         <div class="pdf-container">
             <iframe id="pdfFrame"></iframe>
@@ -57,7 +55,7 @@
 
                     for (let j = 0; j < resultData.length; j++)
                     {
-                        const itemInfo = resultData[j][0].split(' ');
+                        const itemInfo = resultData[j];
                         if (currentChapter != itemInfo[0])
                         {
                             if (currentChapter != "")
@@ -65,19 +63,19 @@
                                 linkCell.appendChild(anchor);
                             }
                             currentChapter = itemInfo[0]
-                            currentItem = itemInfo[1]
+                            currentItem = itemInfo[2]
                             const row = resultTable.insertRow();
                             linkCell = row.insertCell();
                             anchor = document.createElement("a");
-                            anchor.innerHTML = `${currentChapter}<br>Items: ${currentItem}`;
-                            anchor.href = resultData[j][1];
+                            anchor.innerHTML = `${currentChapter}<br>${itemInfo[1]}<br>Items: ${currentItem}`;
+                            anchor.href = itemInfo[3];
                             anchor.addEventListener("click", loadPDF);
                         }
                         else
                         {
-                            if (currentItem != itemInfo[1])
+                            if (currentItem != itemInfo[2])
                             {
-                                currentItem = itemInfo[1];
+                                currentItem = itemInfo[2];
                                 anchor.innerHTML += `, ${currentItem}`;
                             }
                         }
