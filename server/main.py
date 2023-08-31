@@ -1,10 +1,10 @@
 from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from server.search import *
-from database.repository.statements import get_sections
+from database.repository.statements import get_sections, TableGenerator
 
 app = FastAPI()
+table = None
 
 # Place static folder of the project to the root of server app
 app.mount("/static", StaticFiles(directory="server/templates/static"), name="static")
@@ -23,10 +23,20 @@ async def index(request: Request):
 
 @app.get('/search')
 async def search_word(search_word: str):
+    global table
     """Search for a part number in index and return results"""
-    #results = search(search_word)
-    results = get_sections(search_word)
-    response = {'words': list(results.keys()), 'results': list(results.values())}
+    table = TableGenerator(get_sections(search_word))
+    #response = {'words': list(results.keys()), 'results': list(results.values())}
+    return {'detail': 'ok'}
+
+@app.get('/iterate')
+async def iterate_table():
+    try:
+        result = next(table)
+        response = {'words': list(result.keys()), 'results': list(result.values())}
+    except StopIteration:
+        response = {}
+    print(response)
     return response
 
 # uvicorn server.main:app --host 0.0.0.0 --port 8000 --reload

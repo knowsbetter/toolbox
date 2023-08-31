@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+    <!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
@@ -7,17 +7,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Toolbox на минималках</title>
     <link rel="stylesheet" href="{{ url_for('static', path='styles.css') }}">
+    <!--<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" 
+          integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">-->
 </head>
 <body>
+
     <form id="input-form" action="" method="get">
-        <label for="search_word">Введите PN для поиска по AIPC B738:</label>
-        <input type="text" id="search_word" name="search_word" placeholder="Введите PN...">
-        <button type="submit">Поиск</button>
+        <div class="form-div">
+            <input type="text" id="search_word" name="search_word" placeholder="Введите PN...">
+            <button type="submit" id="form-button">Поиск</button>
+        </div>
     </form>
 
+    <h2>Результат поиска:</h2>
+    <div id="loader"></div>
     <div class="container">
         <div class="table-container">
-            <h2>Результат поиска:</h2>
             <table id="results"></table>
         </div>
         <div class="pdf-container">
@@ -25,79 +30,9 @@
         </div>
     </div>
 
-    <script>
-        document.getElementById("input-form").addEventListener("submit", async function(event)
-        {
-            event.preventDefault();
-            const inputField = document.getElementById("search_word");
-            const resultTable = document.getElementById("results");
-
-            const response = await fetch(`/search?search_word=${inputField.value}`);
-            const data = await response.json();
-
-            resultTable.innerHTML = "";
-
-            if (data.words && data.results)
-            {
-                const words = data.words;
-                for (let i = 0; i < words.length; i++)
-                {
-                    const word = words[i];
-                    const row = resultTable.insertRow();
-                    const cell = row.insertCell();
-                    cell.innerHTML = `<b>${word}</b>`;
-
-                    const resultData = data.results[i]
-                    var currentItem = "";
-                    var currentChapter = "";
-                    var anchor;
-                    var linkCell;
-
-                    for (let j = 0; j < resultData.length; j++)
-                    {
-                        const itemInfo = resultData[j];
-                        if (currentChapter != itemInfo[0])
-                        {
-                            if (currentChapter != "")
-                            {
-                                linkCell.appendChild(anchor);
-                            }
-                            currentChapter = itemInfo[0]
-                            currentItem = itemInfo[2]
-                            const row = resultTable.insertRow();
-                            linkCell = row.insertCell();
-                            anchor = document.createElement("a");
-                            anchor.innerHTML = `${currentChapter}<br>${itemInfo[1]}<br>Items: ${currentItem}`;
-                            anchor.href = itemInfo[3];
-                            anchor.addEventListener("click", loadPDF);
-                        }
-                        else
-                        {
-                            if (currentItem != itemInfo[2])
-                            {
-                                currentItem = itemInfo[2];
-                                anchor.innerHTML += `, ${currentItem}`;
-                            }
-                        }
-                    }
-                    linkCell.appendChild(anchor);
-                }
-            }
-            else
-            {
-                const row = resultTable.insertRow();
-                const cell = row.insertCell();
-                cell.textContent = "Не найдено!";
-            }
-        });
-
-        function loadPDF(event)
-        {
-            event.preventDefault();
-            var pdfUrl = event.target.href;
-            var pdfFrame = document.getElementById("pdfFrame");
-            pdfFrame.src = pdfUrl;
-        }
-    </script>
+    <!--<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" 
+            integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>-->
+            
+    <script src="{{ url_for('static', path='search.js') }}"></script>
 </body>
 </html>
