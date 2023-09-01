@@ -7,7 +7,29 @@ async function updateTable(cont)
 
     if (data.words && data.results)
     {
-        const words = data.words;
+        add_portion(data);
+        await updateTable(1);
+    }
+    else if (cont == 0)
+    {
+        const row = resultTable.insertRow();
+        const cell = row.insertCell();
+        cell.textContent = "Не найдено!";
+    }
+}
+
+function loadPDF(event)
+{
+    event.preventDefault();
+    var pdfUrl = event.target.href;
+    var pdfFrame = document.getElementById("pdfFrame");
+    pdfFrame.src = pdfUrl;
+}
+
+function add_portion(data)
+{
+    const resultTable = document.getElementById("results");
+    const words = data.words;
         for (let i = 0; i < words.length; i++)
         {
             const word = words[i];
@@ -35,6 +57,7 @@ async function updateTable(cont)
                     currentItem = itemInfo[2]
                     const row = resultTable.insertRow();
                     linkCell = row.insertCell();
+                    linkCell.className = "datacell"
                     anchor = document.createElement("a");
                     anchor.innerHTML = `${currentChapter}<br>${itemInfo[1]}<br>Items: ${currentItem}`;
                     anchor.href = itemInfo[3];
@@ -51,31 +74,16 @@ async function updateTable(cont)
             }
             linkCell.appendChild(anchor);
         }
-        await updateTable(1);
-    }
-    else if (cont == 0)
-    {
-        const row = resultTable.insertRow();
-        const cell = row.insertCell();
-        cell.textContent = "Не найдено!";
-    }
-}
-
-function loadPDF(event)
-{
-    event.preventDefault();
-    var pdfUrl = event.target.href;
-    var pdfFrame = document.getElementById("pdfFrame");
-    pdfFrame.src = pdfUrl;
 }
 
 document.getElementById("input-form").addEventListener("submit", async function(event)
     {
         event.preventDefault();
+        const inputField = document.getElementById("search_word");
+        if (inputField.value === "") return;
         document.getElementById("loader").innerHTML = "Поиск...";
         const resultTable = document.getElementById("results");
         resultTable.innerHTML = "";
-        const inputField = document.getElementById("search_word");
         await fetch(`/search?search_word=${inputField.value}`);
         document.getElementById("loader").innerHTML = "";
         await updateTable(0);

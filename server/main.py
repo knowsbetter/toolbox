@@ -36,7 +36,6 @@ async def iterate_table():
         response = {'words': list(result.keys()), 'results': list(result.values())}
     except StopIteration:
         response = {}
-    print(response)
     return response
 
 # uvicorn server.main:app --host 0.0.0.0 --port 8000 --reload
