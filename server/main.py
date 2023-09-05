@@ -1,15 +1,21 @@
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, Depends
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from database.repository.statements import get_sections, TableGenerator
+from services.db_service import DatabaseService
+import socket
 
 app = FastAPI()
-table = None
+db_service = DatabaseService()
 
 # Place static folder of the project to the root of server app
 app.mount("/static", StaticFiles(directory="server/templates/static"), name="static")
 # Location of html templates
 templates = Jinja2Templates(directory="server/templates")
+
+@app.on_event('startup')
+async def start():
+    hostname = socket.getfqdn()
+    print("Started at:",f'{socket.gethostbyname_ex(hostname)[2][-1]}:8000')
 
 @app.get('/js')
 async def index(request: Request):
@@ -23,19 +29,11 @@ async def index(request: Request):
 
 @app.get('/search')
 async def search_word(search_word: str):
-    global table
-    """Search for a part number in index and return results"""
-    table = TableGenerator(get_sections(search_word))
-    #response = {'words': list(results.keys()), 'results': list(results.values())}
+    db_service.set_search_word(search_word)
     return {'detail': 'ok'}
 
-@app.get('/iterate')
+@app.get('/iterate_results')
 async def iterate_table():
-    try:
-        result = next(table)
-        response = {'words': list(result.keys()), 'results': list(result.values())}
-    except StopIteration:
-        response = {}
-    return response
+    return db_service.get_result()
 
 # uvicorn server.main:app --host 0.0.0.0 --port 8000 --reload

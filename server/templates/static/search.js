@@ -1,9 +1,12 @@
 async function updateTable(cont)
 {
     const resultTable = document.getElementById("results");
+    document.getElementById("loader").innerHTML = "Выполняется поиск...";
 
-    const response = await fetch(`/iterate`);
+    const response = await fetch(`/iterate_results`);
     const data = await response.json();
+
+    document.getElementById("loader").innerHTML = "Поиск завершен";
 
     if (data.words && data.results)
     {
@@ -81,11 +84,10 @@ document.getElementById("input-form").addEventListener("submit", async function(
         event.preventDefault();
         const inputField = document.getElementById("search_word");
         if (inputField.value === "") return;
-        document.getElementById("loader").innerHTML = "Поиск...";
+        
         const resultTable = document.getElementById("results");
         resultTable.innerHTML = "";
-        await fetch(`/search?search_word=${inputField.value}`);
-        document.getElementById("loader").innerHTML = "";
+        fetch(`/search?search_word=${inputField.value}`);
         await updateTable(0);
     });
 

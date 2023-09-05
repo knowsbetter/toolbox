@@ -104,6 +104,8 @@ background: #ccc;
 
 .results-bar {
     border: 0;
+    font-size: 1.5em;
+    font-weight: bolder;
 }
 
 .results-table, td.datacell {
